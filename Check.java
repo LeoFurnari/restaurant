@@ -7,7 +7,19 @@ import java.util.ArrayList;
 public class Check {
 	int checkNum; 
 	ArrayList<Item> itemList;
+	private double subTotal;
+	private double total;
+	private double discounts;
+	private double amountDue;
 	
+	
+	/*
+	contructor
+	*/
+	
+	public Check(){
+		
+	}
 	
 	public String print(){         //This method prints the check as a reciept to the console (Or to a printer)
 		return null;
