@@ -1,0 +1,1 @@
+-fx-border-color: blue;
