@@ -56,7 +56,7 @@ public class Check {
 	/*
 	 * calculateTotal() updates the total, discounts, and subTotal
 	 */
-	private static double calculateTotal(){
+	private static void calculateTotal(){
 		subTotal = 0;
 		for(int i = 0; i < itemList.size(); i++){
 			itemList.get(i);
@@ -64,7 +64,7 @@ public class Check {
 		}
 		tax = subTotal * taxRate;
 		total = subTotal + tax;
-		return total;
+		Item.setPrice(total);
 	}
 
 
@@ -98,7 +98,7 @@ public class Check {
 	public VBox getDisplay(){
 		return this.checkDisplay;
 	}
-	public static ResultSet queryBuilder(double itemPrice, String itemName, String itemType) throws ClassNotFoundException, SQLException{
+	public static ResultSet queryBuilder(double itemPrice, String itemName, String itemType, int custNum) throws ClassNotFoundException, SQLException{
 		Connection conn = null;
 
 		//		try{
@@ -113,8 +113,8 @@ public class Check {
 					+ "("
 					+"Price decimal(10,2) NOT NULL, " 
 					+"Name varchar(100) NOT NULL, "
-					+"Type varchar(100) NOT NULL"
-					+ ");"
+					+"Type varchar(100) NOT NULL, "
+					+"CustNum smallint NOT NULL);"
 					);
 		}
 		else{
@@ -122,13 +122,20 @@ public class Check {
 					+"'"+ itemPrice + "',"
 					+"'"+ itemName + "',"
 					+"'"+ itemType + "'" 
-					+");"
+					+"'" + custNum + "');"
 					);
 		}
 
 		//		System.out.println("Opened database successfully");
-		ResultSet tableData = statement.executeQuery("select * from pg_tables where schemaname='public'");
-		
+		ResultSet tableData = statement.executeQuery("select * from Item");
+		ResultSetMetaData rsmd = tableData.getMetaData();
+		int columnsNumber = rsmd.getColumnCount();
+
+		while (tableData.next()) {
+		    for(int i = 1; i < columnsNumber + 1; i++)
+		        System.out.print(tableData.getString(i) + " ");
+		    System.out.println();
+		}
 		return tableData;
 	}
 
@@ -136,7 +143,8 @@ public class Check {
 		double price = Item.getPrice();
 		String name = Item.getName();
 		String type = Item.getType();
-		queryBuilder(price, name, type);
+		int custNum = Item.getCustNum();
+		queryBuilder(price, name, type, custNum);
 
 	}
 }
