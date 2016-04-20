@@ -48,7 +48,7 @@ public class Check {
 	public void addItem(Item newItem){
 		itemList.add(newItem);
 		checkDisplay.getChildren().add(new Label(newItem.toString()));
-		
+
 
 
 	}
@@ -100,34 +100,36 @@ public class Check {
 	}
 	public static ResultSet queryBuilder(double itemPrice, String itemName, String itemType) throws ClassNotFoundException, SQLException{
 		Connection conn = null;
-//		try{
-			Class.forName("org.postgresql.Driver");
-			conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pos_database",
-					"postgres", "123");
-			Statement statement = conn.createStatement();
+
+		//		try{
+		Class.forName("org.postgresql.Driver");
+		conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/pos_database",
+				"postgres", "123");
+		DatabaseMetaData md = conn.getMetaData();
+		ResultSet tables = md.getTables(null, null, "Item", null);
+		Statement statement = conn.createStatement();
+		if(!tables.next()){
+			statement.executeUpdate("CREATE TABLE Item "
+					+ "("
+					+"Price decimal(10,2) NOT NULL, " 
+					+"Name varchar(100) NOT NULL, "
+					+"Type varchar(100) NOT NULL"
+					+ ");"
+					);
+		}
+		else{
+			statement.executeUpdate("INSERT INTO Item VALUES ("
+					+"'"+ itemPrice + "',"
+					+"'"+ itemName + "',"
+					+"'"+ itemType + "'" 
+					+");"
+					);
+		}
+
+		//		System.out.println("Opened database successfully");
+		ResultSet tableData = statement.executeQuery("select * from pg_tables where schemaname='public'");
 		
-//			statement.executeUpdate("IF NOT EXISTS CREATE TABLE Item "
-//					+ "("
-//					+"Price decimal(10,2) NOT NULL, " 
-//					+"Name varchar(100) NOT NULL, "
-//					+"Type varchar(100) NOT NULL"
-//					+ ");"
-//					);
-//			statement.executeUpdate("Item EXISTS INSERT INTO Item VALUES ("
-//								+"'"+ Item.getPrice() + "',"
-//								+"'"+ Item.getName() + "',"
-//								+"'"+ Item.getType() + "'" 
-//								+");"
-//			);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			System.err.println(e.getClass().getName()+": "+e.getMessage());
-//			System.exit(0);
-//		}
-//		System.out.println("Opened database successfully");
-		 ResultSet tableData = statement.executeQuery("select * from pg_tables where schemaname='public'");
-		System.out.println(tableData);
-		 return tableData;
+		return tableData;
 	}
 
 	public static void main(String[]args) throws ClassNotFoundException, SQLException{
